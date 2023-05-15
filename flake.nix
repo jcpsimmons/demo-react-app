@@ -23,12 +23,25 @@
               cp -r ./ $out/
             '';
           };
+
+          test-app = pkgs.buildNpmPackage {
+            name = "test-app";
+            src = ./src;
+            npmBuild = ''
+              npm run build
+            '';
+            installPhase = ''
+              mkdir --parents $out
+              cp -r ./dist $out/
+            '';
+          };
         };
 
         devShells.default = pkgs.mkShell {
 
           buildInputs = [
             self'.packages.nodejs18
+            self'.packages.test-app
             pkgs.nodePackages.node-gyp-build
           ];
 
