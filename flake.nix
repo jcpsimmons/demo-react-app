@@ -35,6 +35,12 @@
               cp -r build/ $out
             '';
           };
+
+          serve-test-app = pkgs.writeShellScriptBin "serve-test-app" ''
+            #!/usr/bin/env bash
+            cd ${self'.packages.test-app}/build
+            ${pkgs.httplz}/bin/httplz
+          '';
         };
 
         devShells.default = pkgs.mkShell {
@@ -42,6 +48,7 @@
           buildInputs = [
             pkgs.nodejs-18_x
             # self'.packages.test-app
+            pkgs.httplz
             pkgs.nodePackages.node-gyp-build
             pkgs.prefetch-npm-deps
           ];
