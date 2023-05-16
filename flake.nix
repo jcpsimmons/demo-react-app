@@ -26,7 +26,7 @@
 
           test-app = pkgs.buildNpmPackage {
             name = "test-app";
-            src = ./src;
+            src = ./app;
             npmBuild = ''
               npm run build
             '';
@@ -41,7 +41,7 @@
 
           buildInputs = [
             self'.packages.nodejs18
-            self'.packages.test-app
+            # self'.packages.test-app
             pkgs.nodePackages.node-gyp-build
           ];
 
