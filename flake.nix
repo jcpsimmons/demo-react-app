@@ -11,28 +11,28 @@
       systems = [ "x86_64-linux" ];
       perSystem = { config, self', inputs', pkgs, system, ... }: {
         packages = {
-          nodejs18 = pkgs.stdenv.mkDerivation {
-            name = "nodejs20.0.0";
-            src = pkgs.fetchurl {
-              url = "https://nodejs.org/dist/v20.0.0/node-v20.0.0-linux-x64.tar.gz";
-              sha256 = "1kngfglyzfva95g4h1gjwq0ijx6ialg7nskvbib5ij3ghc59lhwm";
-            };
-            installPhase = ''
-              echo "installing nodejs"
-              mkdir -p $out
-              cp -r ./ $out/
-            '';
-          };
 
           test-app = pkgs.buildNpmPackage {
             name = "test-app";
-            src = ./app;
+            src = ./.;
+
+
+            buildInputs = with pkgs; [
+              nodejs-18_x
+            ];
+
+            npmPackFlags = [ "--ignore-scripts" ];
+
             npmBuild = ''
               npm run build
             '';
+
+            # enter dev shell and run prefetch-npm-deps on package lock file
+            npmDepsHash = "sha256-jqESS/Gr3PnN/Vica+bSlv8VEeQdtP9QUfq9xpCIWs8=";
+
             installPhase = ''
-              mkdir --parents $out
-              cp -r ./dist $out/
+              mkdir $out
+              cp -r build/ $out
             '';
           };
         };
@@ -40,9 +40,10 @@
         devShells.default = pkgs.mkShell {
 
           buildInputs = [
-            self'.packages.nodejs18
+            pkgs.nodejs-18_x
             # self'.packages.test-app
             pkgs.nodePackages.node-gyp-build
+            pkgs.prefetch-npm-deps
           ];
 
         };
